@@ -22,12 +22,14 @@ pipeline {
     
     stages {
         stage('Checkout SCM') {
+            when { anyOf {branch "feature-*"; branch "dev-*"} }
             steps {
                cleanWs()
                checkout scm            
             }
         }
         stage('Preparation') {
+            when { anyOf {branch "feature-*"; branch "dev-*"} }
             steps {
                 sh 'make distclean'
                 sh 'make SIMUATION=$TOOLCHAIN ENABLE_UNIT_TESTS=true prep'
@@ -39,11 +41,13 @@ pipeline {
             }
         }
         stage('Build') {
+            when { anyOf {branch "feature-*"; branch "dev-*"} }
             steps {
                 sh '.sonar/build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir bw-output make && make install'
             }
         }
         stage('Static Code Analysis') {
+            when { anyOf {branch "feature-*"; branch "dev-*"} }
             steps {
                 script {
                     def scannerHome = tool 'SonarScanner'; // Name of the SonarQube Scanner you created in "Global Tool Configuration" section
@@ -54,7 +58,7 @@ pipeline {
             }
         }
         stage('Deploy') {     
-            when { anyOf {branch "release"; branch "test"; branch "feature-*"} }
+            when { anyOf {branch "feature-*"; branch "dev-*"} }
             steps {
                 sshPublisher(
                     continueOnError: false, failOnError: true,
@@ -78,13 +82,13 @@ pipeline {
             }
         }
         stage('Unit Testing') {
-            when { anyOf {branch "release"; branch "test"; branch "feature-*"} }
+            when { anyOf {branch "feature-*"} }
             steps {
                 echo 'make test'
             }
         }
         stage('Coverage Testing') {
-            when { anyOf {branch "release"; branch "test"; branch "feature-*"} }
+            when { anyOf {branch "feature-*"} }
             steps {
                 echo 'make icov'
             }
