@@ -25,6 +25,8 @@ pipeline {
         SOURCE_DIR_ROVER = 'build/**/*'
         /* SonarQube Server URL */
         SONARQUBE_URL = 'http://192.168.8.29:9000' 
+        /* Sonnar Scanner */
+        SONAR_SCANNER = 'SonarScanner'
     }
     
     stages {
@@ -57,7 +59,7 @@ pipeline {
             when { anyOf {branch "release"; branch "test"} }
             steps {
                 script {
-                    def scannerHome = tool 'SonarScanner'; // Name of the SonarQube Scanner you created in "Global Tool Configuration" section
+                    def scannerHome = tool SONAR_SCANNER; // Name of the SonarQube Scanner you created in "Global Tool Configuration" section
                     withSonarQubeEnv() {
                         sh "${scannerHome}/sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner"
                     }
