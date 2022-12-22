@@ -20,7 +20,7 @@ pipeline {
         /* SonarQube Server URL */
         SONARQUBE_URL = 'http://192.168.8.29:9000' 
         /* SonarQube Scanner */
-        SONAR_SCANNER = 'Linux 64-bit'
+        SONAR_SCANNER = 'SonarScanner'
     }
     
     stages {
@@ -53,7 +53,7 @@ pipeline {
             when { anyOf {branch "feature-*"; branch "dev-*"} }
             steps {
                 script {
-                    def scannerHome = tool 'Linux-64-bit' // Name of the SonarQube Scanner you created in "Global Tool Configuration" section
+                    def scannerHome = tool SONAR_SCANENER // Name of the SonarQube Scanner you created in "Global Tool Configuration" section
                     withSonarQubeEnv() {
                         sh "${scannerHome}/sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner"
                     }
