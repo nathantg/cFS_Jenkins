@@ -19,9 +19,9 @@ pipeline {
         REMOTE_DIR_FLATSAT = '/nathan/lrm/EDU_FlatSat'
         REMOTE_DIR_ROVER = '/nathan/lrm/EDU_Rover'
         /* The directory relative to the Jenkins workspace where the files to be deployed to target are located */
-        SOURCE_DIR_BOARD = 'build/exe/**/*'
-        SOURCE_DIR_FLATSAT = 'build/exe/**/*'
-        SOURCE_DIR_ROVER = 'build/exe/**/*'
+        SOURCE_DIR_BOARD = 'build/**/*'
+        SOURCE_DIR_FLATSAT = 'build/**/*'
+        SOURCE_DIR_ROVER = 'build/**/*'
         /* SonarQube Server URL */
         SONARQUBE_URL = 'http://192.168.8.29:9000' 
     }
