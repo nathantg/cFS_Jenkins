@@ -23,7 +23,7 @@ pipeline {
     
     stages {
         stage('Checkout SCM') {
-            when { anyOf {branch "feature-*"; branch "dev-*"} }
+            when { anyOf {branch "feature/*"; branch "dev-*"} }
             steps {
                cleanWs()
                checkout scm            
