@@ -44,22 +44,23 @@ pipeline {
         stage('Build') {
             when { anyOf {branch "feature-*"; branch "dev-*"} }
             steps {
-                //sh '.sonar/build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir bw-output make && make install'
-                sh 'make'
-                sh 'make install'
+                sh '.sonar/build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir bw-output make && make install'
+                //sh 'make'
+                //sh 'make install'
             }
         }
         stage('Static Code Analysis') {
             when { anyOf {branch "feature-*"; branch "dev-*"} }
             steps {
                 echo 'Static Code Analysis'
-                // script {
-                //     def scannerHome = tool 'SonarScanner' // Name of the SonarQube Scanner you created in "Global Tool Configuration" section
-                //     withSonarQubeEnv() {
-                //         sh "${scannerHome}/sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner"
-                //     }
+                script {
+                    def scannerHome = tool 'SonarScanner' // Name of the SonarQube Scanner you created in "Global Tool Configuration" section
+                    withSonarQubeEnv() {
+                        sh "${scannerHome}/sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner"
+                    }
                 }
             }
+        }
         stage('Deploy') {     
             when { anyOf {branch "feature-*"; branch "dev-*"} }
             steps {
