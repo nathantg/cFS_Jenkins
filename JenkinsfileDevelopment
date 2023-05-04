@@ -91,7 +91,7 @@ pipeline {
                         user: 'debian',
                         password: 'temppwd',
                         allowAnyHosts: true
-                    ], command: 'cd ~/nathan/lrm/Jenkins_cFS_deploy/build/exe/cpu1 && chmod +rwx core-cpu1 && ./core-cpu1'
+                    ], command: 'cd ~/nathan/lrm/Jenkins_cFS_deploy/build/exe/cpu1 && chmod +rwx core-cpu1'// && ./core-cpu1'
                 }
             }
         }
