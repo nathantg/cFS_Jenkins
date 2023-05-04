@@ -18,7 +18,7 @@ pipeline {
         /* The directory relative to the Jenkins workspace where the files to be deployed to target are located */
         SOURCE_DIR = 'build/**/*'
         /* SonarQube Server URL */
-        SONARQUBE_URL = 'http://192.168.8.29:9000' 
+        SONARQUBE_URL = 'http://192.168.8.29:9000'
     }
     
     stages {
@@ -33,7 +33,7 @@ pipeline {
             when { anyOf {branch "feature-*"; branch "dev-*"} }
             steps {
                 sh 'make distclean'
-                sh 'make SIMUATION=$TOOLCHAIN ENABLE_UNIT_TESTS=true prep'
+                sh 'make SIMUATION=$TOOLCHAIN' //ENABLE_UNIT_TESTS=true prep'
                 sh '''
                   mkdir -p .sonar
                   curl -sSLo .sonar/build-wrapper-linux-x86.zip ${SONARQUBE_URL}/static/cpp/build-wrapper-linux-x86.zip 
@@ -44,22 +44,22 @@ pipeline {
         stage('Build') {
             when { anyOf {branch "feature-*"; branch "dev-*"} }
             steps {
-                sh '.sonar/build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir bw-output make && make install'
-                //sh 'make'
-                //sh 'make install'
+                //sh '.sonar/build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir bw-output make && make install'
+                sh 'make'
+                sh 'make install'
             }
         }
         stage('Static Code Analysis') {
-            when { anyOf {branch "feature-*"; branch "dev-*"} }
-            steps {
-                echo 'Static Code Analysis'
-                script {
-                    def scannerHome = tool 'SonarScanner' // Name of the SonarQube Scanner you created in "Global Tool Configuration" section
-                    withSonarQubeEnv() {
-                        sh "${scannerHome}/sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner"
-                    }
-                }
-            }
+            echo 'Static Code Analysis'
+            // when { anyOf {branch "feature-*"; branch "dev-*"} }
+            // steps {
+            //     script {
+            //         def scannerHome = tool 'SonarScanner' // Name of the SonarQube Scanner you created in "Global Tool Configuration" section
+            //         withSonarQubeEnv() {
+            //             sh "${scannerHome}/sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner"
+            //         }
+            //     }
+            // }
         }
         stage('Deploy') {     
             when { anyOf {branch "feature-*"; branch "dev-*"} }
@@ -83,6 +83,14 @@ pipeline {
                                          usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false) 
                     ]
                 ) 
+
+                sshagent(credentials: ['NathanBeaglebone']) {
+                    sshCommand remote: '192.168.8.39',
+                               command: '''
+                                        cd ~/nathan/lrm/Jenkins_cFS_deploy/build/exe/cpu1
+                                        sh chmod +rwx core-cpu1
+                                        '''
+                }
             }
         }
         stage('Unit Testing') {
