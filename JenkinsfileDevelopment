@@ -87,8 +87,8 @@ pipeline {
                     sshCommand remote: [
                         name: 'NathanBeaglebone',
                         host: '192.168.8.39',
-                        user: 'debian',
-                        password: 'temppwd',
+                        //user: 'debian',
+                        //password: 'temppwd',
                         allowAnyHosts: true
                     ], command: 'cd ~/nathan/lrm/Jenkins_cFS_deploy/build/exe/cpu1 && chmod +rwx core-cpu1'
                 }
