@@ -73,7 +73,7 @@ pipeline {
                         user: 'debian',
                         password: 'temppwd',
                         allowAnyHosts: true
-                    ], command: 'cd ~/cfs/cFS/ && make test'
+                    ], command: 'cd ~/cfs/cFS/ && make lcov'
                 }
             }
         }
