@@ -14,7 +14,7 @@ pipeline {
         /* Targets for build artifacts to be sent to via SSH. Can be configured in "Configure System" */
         DEPLOY_TARGET = 'Nathan Beaglebone'
         /* Directory on the target relative to the user directory to send the build artifacts to */
-        REMOTE_DIR = '/nathan/lrm/Jenkins_cFS_deploy'
+        REMOTE_DIR = '/nathan/lrm/Jenkins_cFS_dev'
         /* The directory relative to the Jenkins workspace where the files to be deployed to target are located */
         SOURCE_DIR = 'build/**/*'
         /* SonarQube Server URL */
@@ -32,19 +32,21 @@ pipeline {
         stage('Preparation') {
             when { anyOf {branch "feature-*"; branch "dev-*"} }
             steps {
-                sh 'make distclean'
-                sh 'make SIMUATION=$TOOLCHAIN ENABLE_UNIT_TESTS=true prep'
-                sh '''
-                  mkdir -p .sonar
-                  curl -sSLo .sonar/build-wrapper-linux-x86.zip ${SONARQUBE_URL}/static/cpp/build-wrapper-linux-x86.zip 
-                  unzip -o .sonar/build-wrapper-linux-x86.zip -d .sonar/
-                '''
+                echo 'Preparation'
+                // sh 'make distclean'
+                // sh 'make SIMUATION=$TOOLCHAIN ENABLE_UNIT_TESTS=true prep'
+                // sh '''
+                //   mkdir -p .sonar
+                //   curl -sSLo .sonar/build-wrapper-linux-x86.zip ${SONARQUBE_URL}/static/cpp/build-wrapper-linux-x86.zip 
+                //   unzip -o .sonar/build-wrapper-linux-x86.zip -d .sonar/
+                // '''
             }
         }
         stage('Build') {
             when { anyOf {branch "feature-*"; branch "dev-*"} }
             steps {
-                sh '.sonar/build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir bw-output make && make install'
+                echo 'Build'
+                //sh '.sonar/build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir bw-output make && make install'
                 //sh 'make'
                 //sh 'make install'
             }
@@ -53,36 +55,26 @@ pipeline {
             when { anyOf {branch "feature-*"; branch "dev-*"} }
             steps {
                 echo 'Static Code Analysis'
-                script {
-                    def scannerHome = tool 'SonarScanner' // Name of the SonarQube Scanner you created in "Global Tool Configuration" section
-                    withSonarQubeEnv() {
-                        sh "${scannerHome}/sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner"
-                    }
-                }
+                // script {
+                //     def scannerHome = tool 'SonarScanner' // Name of the SonarQube Scanner you created in "Global Tool Configuration" section
+                //     withSonarQubeEnv() {
+                //         sh "${scannerHome}/sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner"
+                //     }
+                // }
             }
         }
         stage('Deploy') {     
             when { anyOf {branch "feature-*"; branch "dev-*"} }
             steps {
-                sshPublisher(
-                    continueOnError: false, failOnError: true,
-                    publishers: [
-                        sshPublisherDesc(configName: DEPLOY_TARGET, 
-                                         transfers: [
-                                             sshTransfer(cleanRemote: false, excludes: '',
-                                                         execTimeout: 120000, 
-                                                         flatten: false, 
-                                                         makeEmptyDirs: false, 
-                                                         noDefaultExcludes: false, 
-                                                         patternSeparator: '[, ]+', 
-                                                         remoteDirectory: REMOTE_DIR, 
-                                                         remoteDirectorySDF: false, 
-                                                         removePrefix: '', 
-                                                         sourceFiles: SOURCE_DIR)                               
-                                         ], 
-                                         usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false) 
-                    ]
-                ) 
+                sshagent(credentials: ['NathanBeaglebone']) {
+                    sshCommand remote: [
+                        name: 'NathanBeaglebone',
+                        host: '192.168.8.40',
+                        user: 'debian',
+                        password: 'temppwd',
+                        allowAnyHosts: true
+                    ], command: 'cd ~/nathan/lrm/cFS_Jenkins_Demo/build/exe/cpu1 && ./core-cpu1'
+                }
             }
         }
         stage('Unit Testing') {
