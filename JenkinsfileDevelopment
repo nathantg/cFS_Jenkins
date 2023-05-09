@@ -73,7 +73,7 @@ pipeline {
                         user: 'debian',
                         password: 'temppwd',
                         allowAnyHosts: true
-                    ], command: 'cd ~/nathan/lrm/cFS_Jenkins_Demo/build/exe/cpu1 && ./core-cpu1'
+                    ], command: 'cd ~/nathan/lrm/cFS_Jenkins_Demo/ && make test'
                 }
             }
         }
