@@ -69,11 +69,11 @@ pipeline {
                 sshagent(credentials: ['NathanBeaglebone']) {
                     sshCommand remote: [
                         name: 'NathanBeaglebone',
-                        host: '192.168.8.40',
+                        host: '192.168.8.34',
                         user: 'debian',
                         password: 'temppwd',
                         allowAnyHosts: true
-                    ], command: 'cd ~/nathan/lrm/cFS_Jenkins_Demo/ && make test'
+                    ], command: 'cd ~/cfs/cFS/ && make test'
                 }
             }
         }
